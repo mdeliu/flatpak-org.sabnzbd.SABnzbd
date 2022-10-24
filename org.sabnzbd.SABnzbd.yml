@@ -1,0 +1,87 @@
+id: org.sabnzbd.SABnzbd
+command: SABnzbd.py
+runtime: org.freedesktop.Platform
+runtime-version: '22.08'
+sdk: org.freedesktop.Sdk
+finish-args:
+  - --socket=x11
+  - --share=ipc
+  - --share=network
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --filesystem=xdg-download
+modules:
+- python3-requirements.json
+
+- name: 7-zip
+  buildsystem: simple
+  build-commands:
+    - |
+      for bundle in Alone2 SFXCon; do
+        pushd CPP/7zip/Bundles/${bundle}
+        make -j ${FLATPAK_BUILDER_N_JOBS} -f ../../cmpl_gcc.mak
+        popd
+      done
+    - install -Dm755 CPP/7zip/Bundles/Alone2/b/g/7zz   $FLATPAK_DEST/bin/7z
+    - install -Dm755 CPP/7zip/Bundles/SFXCon/b/g/7zCon $FLATPAK_DEST/bin/7zCon.sfx
+  sources:
+    - type: archive
+      strip-components: 0
+      url: https://7-zip.org/a/7z2201-src.tar.xz
+      sha256: 393098730c70042392af808917e765945dc2437dee7aae3cfcc4966eb920fbc5
+
+- name: gnustep-make
+  buildsystem: simple
+  build-commands:
+    - ./configure --prefix=/app
+    - make -j $FLATPAK_BUILDER_N_JOBS install
+  sources:
+    - type: archive
+      url: https://github.com/gnustep/tools-make/releases/download/make-2_9_0/gnustep-make-2.9.0.tar.gz
+      sha256: a0b066c11257879c7c85311dea69c67f6dc741ef339db6514f85b64992c40d2a
+      
+- name: gnustep
+  buildsystem: simple
+  build-commands:
+    - ./configure --prefix=/app
+    - make -j $FLATPAK_BUILDER_N_JOBS install
+    - ls /app/include
+  sources:
+    - type: archive
+      url: https://github.com/gnustep/libs-base/releases/download/base-1_28_0/gnustep-base-1.28.0.tar.gz
+      sha256: c7d7c6e64ac5f5d0a4d5c4369170fc24ed503209e91935eb0e2979d1601039ed
+
+- name: unrar
+  buildsystem: simple
+  build-commands:
+    - make
+    - cp ${PWD}/unrar /app/bin/
+  sources:
+    - type: archive
+      url: https://www.rarlab.com/rar/unrarsrc-6.1.7.tar.gz
+      sha256: de75b6136958173fdfc530d38a0145b72342cf0d3842bf7bb120d336602d88ed
+
+- name: par2
+  buildsystem: simple
+  build-commands:
+    - ./configure --prefix=/app
+    - make
+    - cp ${PWD}/par2 /app/bin/    
+  sources:
+    - type: archive
+      url: https://github.com/Parchive/par2cmdline/releases/download/v0.8.1/par2cmdline-0.8.1.tar.gz
+      sha256: 7b2fcc19b54c7080939fc2cbaca33ae40ac33759a526292933c94a85ba850d11
+
+- name: sabnzbdplus
+  buildsystem: simple
+  build-commands:
+   - cp -r * /app/bin/
+   - install -Dm644 ${PWD}/linux/org.sabnzbd.sabnzbd.appdata.xml /app/share/appdata/$FLATPAK_ID.xml
+   - install -Dm644 ${PWD}/icons/logo-arrow.svg /app/share/icons/hicolor/scalable/apps/$FLATPAK_ID.svg
+   - install -Dm644 ${PWD}/linux/sabnzbd.desktop /app/share/applications/$FLATPAK_ID.desktop
+   - desktop-file-edit --set-icon=${FLATPAK_ID} /app/share/applications/${FLATPAK_ID}.desktop
+   - sed -i 's|Exec=/opt/sabnzbd/SABnzbd.py --browser 1 %F|Exec=SABnzbd.py|g' /app/share/applications/${FLATPAK_ID}.desktop
+  sources:
+    - type: archive
+      url: https://github.com/sabnzbd/sabnzbd/releases/download/3.6.1/SABnzbd-3.6.1-src.tar.gz
+      sha256: e365e4581c594aac445b9fb229aa80c0a1ed299deca511045bb78bd55d2ece9e
