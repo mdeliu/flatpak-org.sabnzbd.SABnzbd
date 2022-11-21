@@ -4,6 +4,8 @@ runtime: org.freedesktop.Platform
 runtime-version: '22.08'
 sdk: org.freedesktop.Sdk
 finish-args:
+  - --socket=x11
+  - --share=ipc
   - --share=network
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
