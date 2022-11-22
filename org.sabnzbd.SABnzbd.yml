@@ -9,7 +9,7 @@ finish-args:
   - --share=network
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.kde.StatusNotifierWatcher
-  - --filesystem=xdg-download
+  - --filesystem=host
 modules:
   - python3-requirements.json
   - name: gnustep-make
