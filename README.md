@@ -7,7 +7,7 @@
 flatpak install flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08
 flatpak-builder build-dir org.sabnzbd.SABnzbd.yml
 flatpak-builder --user --install --force-clean build-dir org.sabnzbd.SABnzbd.yml
-flatpak run org.sabnzbd.SABnzbd.yml
+flatpak run org.sabnzbd.SABnzbd
 ```
 
 ### Issues
